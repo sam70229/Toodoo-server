@@ -5,10 +5,10 @@ Parameters
 
 Name		|Type    |Description                                              
 ----------|:------:|---------------------------------------------------------
-owner		| string |owner of the todos                                                         
-start_date| Bigint |This will return todos expire date greater than the value
-end_date  | Bigint |todos end date                                           
-sort		| string |Can be `expired date`, `completed`<p> default: `priority`
+owner	  | string |owner of the todos                                                         
+start_date| Bigint |start of the range date (This compares to todos expire date) only accept int of unix timestamp.
+end_date  | Bigint |end of the range date (This compares to todos expire data) only accept int of unix timestamp.     
+sort	  | string |Can be `expired date`, `completed`<p> default: `priority`
 
 
 
@@ -17,9 +17,9 @@ sort		| string |Can be `expired date`, `completed`<p> default: `priority`
 
 Parameters
 
-Name		|Type    |Description                                              
+Name	  |Type    |Description                                              
 ----------|:------:|---------------------------------------------------------
-uid 		|  uuid  |uuid of todo
+uid 	  | string |uid of todo
 
 
 
@@ -28,7 +28,7 @@ uid 		|  uuid  |uuid of todo
 
 Parameters
 
-Name		     |  Type  |Description                                     
+Name		   |  Type  |Description                                     
 ---------------|:------:|------------------------------------------------
 title          | string |**Required**. The name of todo.                 
 category       | string |**Required**. The category of todo.             
@@ -38,14 +38,5 @@ priority       |  int   |**Required**. The priority of the todo. 1 - High, 2 - M
 remind         | string |Remind time of todos
 completed      |  bool  |Todo complete or not
 recentlyDeleted|  bool  |Recently deleted todo or not. if recently deleted it will not show in main page.
-desc           | string |
+desc           | string |Detail description of todo.
 
-
-var createdDate: Double
-    var expiredDate: Double?
-    var priority: Int
-    var remind: String?
-    var desc: String?
-    var subtasks: [TDSubtask]?
-    var completed: Bool
-    var recentlyDelete: Bool
