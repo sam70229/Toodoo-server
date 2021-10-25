@@ -1,12 +1,10 @@
 package model
 
 import (
-	// "database/sql"
-	"time"
+	"encoding/json"
 
 	"github.com/google/uuid"
 	"gopkg.in/guregu/null.v4"
-
 )
 
 type Todo struct {
@@ -22,24 +20,7 @@ type Todo struct {
 	RecentlyDelete bool `json:"recentlyDelete"`
 }
 
-func NewTodo() Todo {
-	var todo Todo
-	todo.Uid = uuid.New()
-	todo.Title = "Test title"
-	todo.CreatedDate = time.Now().Unix()
-	todo.Completed = false
-	todo.RecentlyDelete = false
-	return todo
+func (t *Todo) String() string {
+	b, _ := json.Marshal(t)
+	return string(b)
 }
-
-// let uid: UUID
-// var title: String
-// var category: String
-// var createdDate: Date
-// var expiredDate: Date?
-// var priority: Int
-// var remind: String?
-// var desc: String?
-// var subtasks: [TDSubtask]?
-// var completed: Bool
-// var delete: Bool
