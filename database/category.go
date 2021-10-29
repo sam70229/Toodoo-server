@@ -19,13 +19,11 @@ func (c *Client) GetCategories(ctx context.Context) ([]model.Category, error) {
 
 	for rows.Next() {
 		var category model.Category
-		err = rows.Scan(&category.Uid, &category.Title, &category.CreatedDate)
+		err = rows.Scan(&category.Uid, &category.Title, &category.Create_at)
 		categories = append(categories, category)
 	}
 	c.logger.Infow("GetCategories", "categories", categories)
 	return categories, nil
-
-
 
 	return categories, nil
 }
@@ -36,7 +34,7 @@ func (c *Client) AddCategory(ctx context.Context, category model.Category) (stri
 	VALUES ($1, $2, $3)
 	RETURNING uid`
 	var uid uuid.UUID
-	row := c.db.QueryRowContext(ctx, sqlStatment, category.Uid, category.Title, category.CreatedDate)
+	row := c.db.QueryRowContext(ctx, sqlStatment, category.Uid, category.Title, category.Create_at)
 	row.Scan(&uid)
 
 	return uid.String(), nil

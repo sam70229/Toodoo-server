@@ -11,11 +11,11 @@ type Todo struct {
 	Uid uuid.UUID `json:"uid"`
 	Title string `json:"title"`
 	Category string `json:"category"`
-	CreatedDate int64 `json:"createdDate"`
-	ExpiredDate null.Int `json:"expiredDate,omitempty"`
+	Create_at int64 `json:"create_at"`
+    Expire_at null.Int `json:"expire_at,omitempty"`
 	Priority int `json:"priority"`
-	RemindDate null.String `json:"remindDate"`
-	Desc null.String `json:"desc"`
+	Remind_at null.String `json:"remind_at,omitempty"`
+	Comment null.String `json:"comment,omitempty"`
 	Completed bool `json:"completed"`
 	RecentlyDelete bool `json:"recentlyDelete"`
 }

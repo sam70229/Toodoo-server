@@ -1,8 +1,7 @@
 package routes
 
 import (
-	"encoding/json"
-	"net/http"
+
 
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
@@ -26,11 +25,11 @@ type Server struct {
 }
 
 type ApiResponse struct {
-	Data interface{}
+	Data interface{} `json:"data"`
 }
 
 func NewRouter(router chi.Router, apistore api.APIStore) error {
-	
+
 	s := &Server{
 		logger: zap.S().With("package", "routes"),
 		router: router,
@@ -42,22 +41,10 @@ func NewRouter(router chi.Router, apistore api.APIStore) error {
 		r.Get("/todo/{uid}", s.GetTodoById())
 		r.Post("/todo/add", s.AddTodo())
 		r.Get("/categories", s.GetCategories())
+		r.Post("/category/add", s.AddCategory())
+		r.Patch("/", s.UpdateTodo())
 	})
 
 	return nil
 }
 
-func (s *Server) GetCategories() http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		ctx := r.Context()
-		s.logger.Infow("GetCategories", "query", r.URL.Query())
-		categories, err := s.apistore.GetCategories(ctx)
-		if err != nil {
-
-		}
-
-		response := ApiResponse{categories}
-		d, _ := json.Marshal(response)
-		w.Write(d)
-	}
-}

@@ -2,29 +2,32 @@ package database
 
 import (
 	"context"
+	"fmt"
 
 	"Toodoo/model"
 
-	"github.com/google/uuid"
+	// "github.com/google/uuid"
 )
 
-func (c *Client) AddTodo(ctx context.Context, todo model.Todo) (string, error) {
+func (c *Client) AddTodo(ctx context.Context, todo model.Todo) (model.Todo, error) {
 	sqlStatment := `
-	INSERT INTO todo (uid, title, category, createddate, expiredDate, priority, completed, recentlyDelete)
-	VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
-	RETURNING uid`
-	var uid uuid.UUID
-	row := c.db.QueryRowContext(ctx, sqlStatment, todo.Uid, todo.Title, todo.Category, todo.CreatedDate, todo.ExpiredDate, todo.Priority, todo.Completed, todo.RecentlyDelete)
-	row.Scan(&uid)
+    INSERT INTO todo (uid, title, category, create_at, expire_at, priority, remind_at, description, completed, recentlyDelete)
+	VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10)
+	RETURNING uid, title, category, create_at, expire_at, priority, remind_at, description, completed, recentlyDelete`
+	var insertTodo model.Todo
+	row := c.db.QueryRowContext(ctx, sqlStatment, todo.Uid, todo.Title, todo.Category, todo.Create_at, todo.Expire_at, todo.Priority, todo.Remind_at, todo.Comment, todo.Completed, todo.RecentlyDelete)
 
-	return uid.String(), nil
+	row.Scan(&insertTodo.Uid, &insertTodo.Title, &insertTodo.Category, &insertTodo.Create_at, &insertTodo.Expire_at, &insertTodo.Priority, &insertTodo.Remind_at, &insertTodo.Comment, &insertTodo.Completed, &insertTodo.RecentlyDelete)
+	fmt.Println(insertTodo)
+	
+	return insertTodo, nil
 }
 
 func (c *Client) GetTodos(ctx context.Context, args ...interface{}) ([]model.Todo, error) {
 	sqlStatment := `
 	SELECT * FROM todo
-	WHERE expiredDate >= $1
-	AND expiredDate <= $2
+	WHERE expire_at >= $1
+	AND expire_at <= $2
 	ORDER BY priority
 	`
 	c.logger.Infow("sqlstatment", "string", sqlStatment, "args", args)
@@ -34,7 +37,7 @@ func (c *Client) GetTodos(ctx context.Context, args ...interface{}) ([]model.Tod
 
 	for rows.Next() {
 		var todo model.Todo
-		err = rows.Scan(&todo.Uid, &todo.Title, &todo.Category, &todo.CreatedDate, &todo.ExpiredDate, &todo.Priority, &todo.RemindDate, &todo.Desc, &todo.Completed, &todo.RecentlyDelete)
+		err = rows.Scan(&todo.Uid, &todo.Title, &todo.Category, &todo.Create_at, &todo.Expire_at, &todo.Priority, &todo.Remind_at, &todo.Comment, &todo.Completed, &todo.RecentlyDelete)
 		todos = append(todos, todo)
 	}
 	c.logger.Infow("GetTodos", "todos", todos)
@@ -49,9 +52,30 @@ func (c *Client) GetTodoById(ctx context.Context, id string) (model.Todo, error)
 	row := c.db.QueryRowContext(ctx, sqlStatment, id)
 
 	var todo model.Todo
-	err := row.Scan(&todo.Uid, &todo.Title, &todo.Category, &todo.CreatedDate, &todo.ExpiredDate, &todo.Priority, &todo.RemindDate, &todo.Desc, &todo.Completed, &todo.RecentlyDelete)
+	err := row.Scan(&todo.Uid, &todo.Title, &todo.Category, &todo.Create_at, &todo.Expire_at, &todo.Priority, &todo.Remind_at, &todo.Comment, &todo.Completed, &todo.RecentlyDelete)
 	checkError(err)
-	
+
 	c.logger.Infow("GetTodoById", "todo", todo)
 	return todo, nil
+}
+
+func (c *Client) GetTodosByCategory(ctx context.Context, category string) ([]model.Todo, error) {
+	sqlStatement := `
+	SELECT * FROM todo
+	WHERE category=$1
+	`
+	rows, err := c.db.QueryContext(ctx, sqlStatement, category)
+
+	if err != nil {
+		return nil, err
+	}
+	var todos []model.Todo
+	
+	for rows.Next() {
+		var todo model.Todo
+		err = rows.Scan(&todo.Uid, &todo.Title, &todo.Category, &todo.Create_at, &todo.Expire_at, &todo.Priority, &todo.Remind_at, &todo.Comment, &todo.Completed, &todo.RecentlyDelete)
+		todos = append(todos, todo)
+	}
+
+	return todos, nil
 }

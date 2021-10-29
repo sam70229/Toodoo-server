@@ -1,10 +1,10 @@
 package routes
 
 import (
-    "encoding/json"
-    "net/http"
+	"encoding/json"
+	"net/http"
 
-    "github.com/go-chi/chi"
+	"github.com/go-chi/chi"
 
 	"Toodoo/model"
 )
@@ -16,17 +16,28 @@ func (s *Server) GetTodos() http.HandlerFunc {
 
 		start_time := r.URL.Query().Get("start_time")
 		end_time := r.URL.Query().Get("end_time")
+		if r.URL.Query().Get("category") != "" {
+			category := r.URL.Query().Get("category")
+			s.logger.Infow("GetTodos", "category", category)
 
-		s.logger.Infow("GetTodos", "query", r.URL.Query())
+			todos, err := s.apistore.GetTodosByCategory(ctx, category)
+			if err != nil {
+				s.logger.Fatalw("GetTodos", "error", err)
+			}
+			RenderJSONResponse(w, http.StatusOK, todos)
+		} else {
+			s.logger.Infow("GetTodos", "query", r.URL.Query())
 
-		todos, err := s.apistore.GetTodos(ctx, start_time, end_time)
-		if err != nil {
-            s.logger.Fatalw("GetTodos", "error", err)
+			todos, err := s.apistore.GetTodos(ctx, start_time, end_time)
+			if err != nil {
+				s.logger.Fatalw("GetTodos", "error", err)
+			}
+	
+			RenderJSONResponse(w, http.StatusOK, todos)
 		}
-
-		response := ApiResponse{todos}
-		d, _ := json.Marshal(response)
-		w.Write(d)
+		// response := ApiResponse{todos}
+		// d, _ := json.Marshal(response)
+		// w.Write(d)
 	}
 }
 
@@ -52,7 +63,7 @@ func (s *Server) AddTodo() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
 
-		var request map[string][]model.Todo
+		var request []model.Todo
 		decoder := json.NewDecoder(r.Body)
 		err := decoder.Decode(&request)
 		if err != nil {
@@ -61,10 +72,20 @@ func (s *Server) AddTodo() http.HandlerFunc {
 		s.logger.Infow("AddTodo", "request", request)
 		// checkError(err)
 
-        uid, err := s.apistore.AddTodo(ctx, request["todos"][0])
+        uid, err := s.apistore.AddTodo(ctx, request[0])
 
-		response := ApiResponse{uid}
-		d, _ := json.Marshal(response)
-		w.Write(d)
+		RenderJSONResponse(w, http.StatusOK, uid)
+
+		// response := ApiResponse{uid}
+		// d, _ := json.Marshal(response)
+		// w.Write(d)
 	}
+}
+
+func (s *Server) UpdateTodo() http.HandlerFunc {
+	return func (w http.ResponseWriter, r *http.Request) {
+		// ctx := r.Context()
+		
+	}
+
 }

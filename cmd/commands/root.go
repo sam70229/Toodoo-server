@@ -13,8 +13,8 @@ func Run(args []string) error {
 
 var RootCmd = &cobra.Command {
     Use: "toodoo",
-    Short: "toodoo short",
-    Long: "toodoo logn",
+    Short: "toodoo",
+    Long: "toodoo",
 }
 
 func init() {

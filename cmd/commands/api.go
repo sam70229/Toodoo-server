@@ -13,11 +13,11 @@ var serverCmd = &cobra.Command{
             Use: "server",
             Short: "Start the api server",
             Long: `Start API`,
+			RunE: serverCmdF,
         }
 
 func init() {
     RootCmd.AddCommand(serverCmd)
-    RootCmd.RunE = serverCmdF
 }
 
 func serverCmdF(command *cobra.Command, args []string) error {
