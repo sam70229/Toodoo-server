@@ -1,49 +1,42 @@
 package logger
 
 import (
-	"io"
-	"log"
-	"os"
+	"github.com/knadh/koanf"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
 )
 
-type Logger struct {
-	Info *log.Logger
-	Warning *log.Logger
-	Error *log.Logger
-}
 
-var (
-	Info *log.Logger
-	Warning *log.Logger
-	Error *log.Logger
-)
+func InitLogger(c *koanf.Koanf) {
+	logConfig := zap.NewProductionConfig()
+	logConfig.Sampling = nil
 
-func init() {
-	initial(os.Stdout, os.Stdout, os.Stderr)
-}
+	var logLevel zapcore.Level
 
-func New() (*Logger, error) {
-
-	l := &Logger{
+	if err := logLevel.Set(c.String("logger.level")); err != nil {
+		zap.S().Fatalw("Could not determine logger level", "error", err)
 	}
 
-	return l, nil
-}
+	logConfig.Level.SetLevel(logLevel)
 
-func (l *Logger) Init(infoHandle io.Writer, warningHandle io.Writer, errorHandle io.Writer) {
-	l.Info = log.New(infoHandle, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
+	loggerEncoding := c.String("logger.encoding")
+	logConfig.Encoding = loggerEncoding
 
-	l.Warning = log.New(warningHandle, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
+	if c.Bool("logger.color") {
+		logConfig.EncoderConfig.EncodeLevel = zapcore.CapitalColorLevelEncoder
+	}
 
-	l.Error = log.New(errorHandle, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
+	// Use sane timestamp when logging to console
+	if logConfig.Encoding == "console" {
+		logConfig.EncoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
+	}
 
-}
+	// JSON Fields
+	logConfig.EncoderConfig.MessageKey = "msg"
+	logConfig.EncoderConfig.LevelKey = "level"
+	logConfig.EncoderConfig.CallerKey = "caller"
 
-func initial(infoHandle io.Writer, warningHandle io.Writer, errorHandle io.Writer) {
-	Info = log.New(infoHandle, "[INFO] ", log.Ldate|log.Ltime|log.Lshortfile)
-
-	Warning = log.New(warningHandle, "[WARNING] ", log.Ldate|log.Ltime|log.Lshortfile)
-
-	Error = log.New(errorHandle, "[ERROR] ", log.Ldate|log.Ltime|log.Lshortfile)
+	globalLogger, _ := logConfig.Build()
+	zap.ReplaceGlobals(globalLogger)
 
 }

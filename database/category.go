@@ -24,8 +24,6 @@ func (c *Client) GetCategories(ctx context.Context) ([]model.Category, error) {
 	}
 	c.logger.Infow("GetCategories", "categories", categories)
 	return categories, nil
-
-	return categories, nil
 }
 
 func (c *Client) AddCategory(ctx context.Context, category model.Category) (string, error) {

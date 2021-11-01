@@ -2,11 +2,13 @@ package commands
 
 import (
     "github.com/spf13/cobra"
+	"go.uber.org/zap"
+
     "Toodoo/config"
 	"Toodoo/logger"
 	"Toodoo/server"
+	
 	"fmt"
-	"os"
 )
 
 var serverCmd = &cobra.Command{
@@ -23,11 +25,7 @@ func init() {
 func serverCmdF(command *cobra.Command, args []string) error {
     _ = config.Defaults(config.Config)
 
-	config.InitLogger(config.Config)
-
-	l, err := logger.New()
-
-	l.Init(os.Stdout, os.Stdout, os.Stderr)
+	logger.InitLogger(config.Config)
 
 	s, err := server.New(config.Config)
 
@@ -36,7 +34,7 @@ func serverCmdF(command *cobra.Command, args []string) error {
 	}
 
 	if err = s.Run(config.Config); err != nil {
-		logger.Error.Fatal("Could not start server", "error", err)
+		zap.S().Fatalw("error", "error", err)
 	}
 	select {}
 }
