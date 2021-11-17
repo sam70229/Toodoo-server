@@ -15,4 +15,7 @@ type APIStore interface {
 	//Category
 	GetCategories(ctx context.Context) ([]model.Category, error)
 	AddCategory(ctx context.Context, category model.Category) (string, error)
+
+	//User
+	RegisterUser(ctx context.Context, user model.User) (*model.User, error)
 }

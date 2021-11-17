@@ -5,7 +5,6 @@ import (
 	"net"
 	"net/http"
 
-	// _ "Toodoo/database"
 	"Toodoo/database"
 	"Toodoo/routes"
 
@@ -54,17 +53,13 @@ func (s *Server) Run(config *koanf.Koanf) error {
         Handler: s.router,
     }
     
-    listener, err := net.Listen("tcp", s.server.Addr)
+    // listener, err := net.Listen("tcp", s.server.Addr)
     if err != nil {
         return fmt.Errorf("Could not listen on %s: %v", s.server.Addr, err)
     }
 
-    go func() {
-        
-        if err = s.server.Serve(listener); err != nil {
-            s.logger.Fatalw("API Lister error", "error", err, "address", s.server.Addr)
-       }
-    }()
+    // go s.server.Serve(listener)
+    go s.server.ListenAndServe()
     s.logger.Infow("API Listening", "address", s.server.Addr)
 
     return nil

@@ -2,6 +2,7 @@ package database
 
 import (
 	"database/sql"
+	"fmt"
 
 	_ "github.com/lib/pq"
 	"go.uber.org/zap"
@@ -38,4 +39,15 @@ func Connect() (*Client, error) {
 	}
 	
 	return c, nil
+}
+
+
+func buildSqlStatment(table string, args ...interface{}) {
+	// sqlStatment := `
+	// SELECT * FROM $1
+	// `
+
+	for _, arg := range args {
+		fmt.Println(arg)
+	}
 }

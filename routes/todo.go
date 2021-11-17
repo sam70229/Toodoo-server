@@ -2,6 +2,7 @@ package routes
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/go-chi/chi"
@@ -13,6 +14,8 @@ import (
 func (s *Server) GetTodos() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ctx := r.Context()
+		fmt.Println(r.Header)
+		fmt.Println(r.Cookie("user"))
 
 		start_time := r.URL.Query().Get("start_time")
 		end_time := r.URL.Query().Get("end_time")
@@ -35,9 +38,6 @@ func (s *Server) GetTodos() http.HandlerFunc {
 	
 			RenderJSONResponse(w, http.StatusOK, todos)
 		}
-		// response := ApiResponse{todos}
-		// d, _ := json.Marshal(response)
-		// w.Write(d)
 	}
 }
 
@@ -76,9 +76,6 @@ func (s *Server) AddTodo() http.HandlerFunc {
 
 		RenderJSONResponse(w, http.StatusOK, uid)
 
-		// response := ApiResponse{uid}
-		// d, _ := json.Marshal(response)
-		// w.Write(d)
 	}
 }
 

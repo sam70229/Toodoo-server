@@ -37,12 +37,13 @@ func NewRouter(router chi.Router, apistore api.APIStore) error {
 	}
 
 	s.router.Route(apiVersion, func(r chi.Router) {
+		r.Post("/register", s.Login())
 		r.Get("/todos", s.GetTodos())
 		r.Get("/todo/{uid}", s.GetTodoById())
-		r.Post("/todo/add", s.AddTodo())
+		r.Post("/todos", s.AddTodo())
 		r.Get("/categories", s.GetCategories())
-		r.Post("/category/add", s.AddCategory())
-		r.Patch("/", s.UpdateTodo())
+		r.Post("/categories", s.AddCategory())
+		// r.Patch("/", s.UpdateTodo())
 	})
 
 	return nil

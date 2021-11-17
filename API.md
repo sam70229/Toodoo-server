@@ -1,3 +1,15 @@
+`POST`
+> /api/v1/register
+
+Parameters
+
+Name       |  Type  | Description
+-----------|:------:|--------------------------------------
+deviceId   | string |**Required**. Device id
+userId     | string |**Required**. User id
+os         | string |user device os.
+os_ver     | string |user device os version.
+
 `GET`
 > /api/v1/todos
 
@@ -6,8 +18,8 @@ Parameters
 Name		|Type    |Description                                              
 ----------|:------:|---------------------------------------------------------
 owner	  | string |owner of the todos                                                         
-start_date| Bigint |start of the range date (This compares to todos expire date) only accept int of unix timestamp.
-end_date  | Bigint |end of the range date (This compares to todos expire data) only accept int of unix timestamp.     
+start_date| bigint |start of the range date (This compares to todos expire date) only accept int of unix timestamp.
+end_date  | bigint |end of the range date (This compares to todos expire data) only accept int of unix timestamp.     
 sort	  | string |Can be `expired date`, `completed`<p> default: `priority`
 
 
@@ -24,7 +36,7 @@ uid 	  | string |uid of todo
 
 
 `POST`
-> /api/v1/todo/add
+> /api/v1/todos
 
 Parameters
 
